@@ -28,10 +28,23 @@
         <tr>
             <td>{{$loop->iteration}}</td>
             <td>{{$trproduction['name']}}</td>
-            <td>{{json_decode($trproduction['materials'])->name}}</td>
-            <td>{{json_decode($trproduction['materials'])->stock}}</td>
+            @php
+            $decode_mat = json_decode($trproduction['materials']);
+            @endphp
+            <td>
+                @foreach($decode_mat as $key_name)
+                    {{  " - ".$materials[array_search(json_decode($key_name)->id, array_column($materials, 'id'))]['name'] }} <br>
+                @endforeach
+            </td>
+            <td>
+                @foreach($decode_mat as $key_stock)
+                    @php
+                        print_r(json_decode($key_stock)->count);
+                    @endphp<br>
+                @endforeach
+            </td>
             <td>{{$trproduction['desc']}}</td>
-            <td>{{$trproduction['promo']}}</td>
+            <td>{{ $promo[array_search($trproduction['promo'], array_column($promo, 'id'))]['name'] }}</td>
             <td>{{$trproduction['expired']}}</td>
             <td>{{$trproduction['stock']}}</td>
             <td>{{$trproduction['picture']}}</td>
@@ -57,39 +70,40 @@
                         @csrf
                         @method('post')
                         <div class="row">
-                            <div class="col-12 mb-3">
+                            <div class="col-6 mb-3">
                                 <label for="name" class="col-form-label">Nama </label>
-                                <input type="text" class="form-control" name="user" required>
+                                <input type="text" class="form-control" name="name" required>
                             </div>
                             <div class="col-6 mb-3">
-                                <label for="name" class="col-form-label">Bahan </label>
+                                <label for="desc" class="col-form-label">Deskripsi:</label>
+                                <textarea class="form-control" name="desc" required></textarea>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="name" class="col-form-label">Nama Bahan </label>
                                 <table id="tbl" class="table form-control">
                                     <thead>
                                         <tr>
                                             <th scope="col">nama</th>
-                                            <th scope="col">kode</th>
                                             <th scope="col">jumlah</th>
                                             <th scope="col">aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td hidden><input class="form-control" name="materials_id[]" type="text" required></td>
-                                                <td>
-                                                    <select class="form-control" name="material_category">
-                                            @foreach ($materials as $mat)
-
-                                                        <option value="{{$mat['id']}}">{{$mat['name']}}</option>  
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                                <td><input class="form-control" name="materials_code[]" type="text" required></td>
-                                                <td><input class="form-control" name="materials_count[]" type="number" required></td>
-                                                <td><input type='button' value='batal' class='btn btn-danger rmv'></td>
+                                            <td>
+                                                <select class="form-control" name="materials[]">
+                                                    <option selected>-- pilih bahan --</option>
+                                                    @foreach ($materials as $mat)
+                                                    <option value="{{$mat['id']}}">{{$mat['name']}} - {{$mat['code_material']}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td><input class="form-control" name="materials_count[]" type="number" required></td>
+                                            <td><input type='button' value='batal' class='btn btn-danger rmv'></td>
                                         </tr>
                                         <tfoot>
                                             <tr>
-                                                <td colspan='3'><input class="btn btn-primary" type='button' value='Tambah' id='add_row'></td>
+                                                <td colspan='3'><input class="btn btn-primary" type='button' value='Tambah' id='productAdd'></td>
                                             </tr>
                                         </tfoot>
                                     </tbody>
@@ -106,11 +120,16 @@
                             </div>
                             <div class="col-6 mb-3">
                                 <label for="name" class="col-form-label">Promo </label>
-                                <input type="text" class="form-control" name="promo" required>
+                                <select class="form-control" name="promo">
+                                    <option value="" selected>-- pilih promo --</option>
+                                    @foreach ($promo as $dt_promo)
+                                        <option value="{{$dt_promo['id']}}">{{$dt_promo['name']}}</option>  
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-6 mb-3">
                                 <label for="name" class="col-form-label">Masa berlaku </label>
-                                <input type="date" class="form-control" name="promo" required>
+                                <input type="date" class="form-control" name="expired" required>
                             </div>
                             <div class="col-6 mb-3">
                                 <label for="name" class="col-form-label">Harga</label>
@@ -129,15 +148,26 @@
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $("#add_row").click(function(){
-            var row="<tr> <td hidden><input class='form-control' name='materials_id[]' type='text' required></td> <td><input class='form-control' name='materials_name[]' type='text' required></td> <td><input class='form-control' name='materials_code[]' type='text' required></td> <td><input class='form-control' name='materials_count[]' type='number' required></td><td><input type='button' value='batal' class='btn btn-danger rmv'></td> </tr>";
-            $("#tbl tbody").append(row);
-        });
-        
-        $("body").on("click",".rmv",function(){
-            $(this).closest("tr").remove();
-        });
+    $(function() {
+    const $tb = $('#tbl tbody');
+    $(".remove").eq(0).hide()
+    $("#productAdd").on("click", function() {
+        const $row = $tb.find("tr").eq(0).clone();
+        $(".remove", $row).show(); // show the hidden delete on this row
+        $row.find("select").val(""); // reset the select
+        $row.find("[type=number]").val(); // reset the numbers
+        $tb.append($row);
+    });
+    $("body").on("click",".rmv",function(){
+        $(this).closest("tr").remove();
+    });
+   
+    $tb.on('change', '.product-name', function() {
+        const $row = $(this).closest('tr');
+        $(".price", $row).hide();
+        const whichPrice = $(this).val();
+        if (whichPrice != "") $(".price", $row).eq(whichPrice-1).show()
+    });
     });
 
     $(function() {

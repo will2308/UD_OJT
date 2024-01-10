@@ -50,6 +50,7 @@ class TrProductionController extends Controller
             'materials' => 'required',
             'expired' => 'required',
             'stock' => 'required',
+            'price' => 'required',
         ];
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()){
@@ -66,6 +67,7 @@ class TrProductionController extends Controller
         $tr_production->promo = $req->promo;
         $tr_production->expired = $req->expired;
         $tr_production->picture = $req->picture;
+        $tr_production->price = $req->price;
         $tr_production->stock = $req->stock;
         $tr_production->save();
 
@@ -127,6 +129,7 @@ class TrProductionController extends Controller
             'materials' => 'required',
             'expired' => 'required',
             'stock' => 'required',
+            'price' => 'required',
         ];
         $validator = Validator::make($req->all(), $rules);
         
@@ -151,6 +154,7 @@ class TrProductionController extends Controller
         $tr_production->desc = $req->desc;
         $tr_production->promo = $req->promo;
         $tr_production->picture = $req->picture;
+        $tr_production->price = $req->price;
         $tr_production->expired = $req->expired;
         $tr_production->stock = $req->stock;
         $tr_production->save();

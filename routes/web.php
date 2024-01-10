@@ -50,7 +50,7 @@ Route::delete('promo/{id}', [PromoController::class, 'destroy']);
 // Trbuy
 Route::get('trbuy', [TrBuyController::class, 'index'])->name('trbuy'); 
 Route::post('trbuy', [TrBuyController::class, 'store']);
-Route::get('trbuy/{id}', [TrBuyController::class, 'edit']);
+// Route::get('trbuy/{id}', [TrBuyController::class, 'edit']);
 Route::delete('trbuy/{id}', [TrBuyController::class, 'destroy']);
 
 // User 
@@ -62,5 +62,10 @@ Route::delete('user/{id}', [UserController::class, 'destroy']);
 // Trproduction
 Route::get('trproduction', [TrProductionController::class, 'index'])->name('trproduction'); 
 Route::post('trproduction', [TrProductionController::class, 'store']);
-Route::get('trproduction/{id}', [TrProductionController::class, 'edit']);
-Route::delete('trproduction/{id}', [TrProductionController::class, 'destroy']);
+// Route::get('trproduction/{id}', [TrProductionController::class, 'edit']);
+// Route::delete('trproduction/{id}', [TrProductionController::class, 'destroy']);
+
+// Trsale 
+Route::post('trsale', [TrSaleController::class, 'store']);
+// Route::get('trproduction/{id}', [TrProductionController::class, 'edit']);
+// Route::delete('trproduction/{id}', [TrProductionController::class, 'destroy']);

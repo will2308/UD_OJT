@@ -1,7 +1,8 @@
 <div class="border-end bg-white" id="sidebar-wrapper">
     <div class="sidebar-heading border-bottom bg-light">
+        {{-- <img class="img-thumbnail m-2" src="{{ url('assets/image/food.png') }}" alt="" width="180" height="180"> --}}
+        <img class="img-thumbnail m-2" src="https://www.cdnlogo.com/logos/d/24/designers-com.svg" alt="" width="180" height="180">
         <h4 class="text-success">UD Purnama Jaya</h4>
-
     </div>
     <div class="list-group list-group-flush">
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{{ route('dashboard') }}"><i class="fa fa-dashboard"></i> dashboard</a>

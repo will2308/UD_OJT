@@ -21,20 +21,20 @@
 {{-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#formtrbuy">tambah</button> --}}
 
 @if (Route::current()->uri == 'trbuy') 
-<table class="table table-striped text-center">
+<table class="table table-hover text-center">
     <thead>
         <tr>
             <th class="align-middle" scope="col" rowspan="2">#</th>
             <th class="align-middle" scope="col" rowspan="2">User</th>
-            <th scope="col" colspan="3">Bahan</th>
+            <th class="align-middle" scope="col" colspan="3">Bahan</th>
             <th class="align-middle" scope="col" rowspan="2">Tanggal</th>
             <th class="align-middle" scope="col" rowspan="2">harga</th>
             <th class="align-middle" scope="col" rowspan="2">aksi</th>
         </tr>
         <tr>
-            <td>nama</td>
-            <td>jumlah</td>
-            <td>harga</td>
+            <th class="align-middle" scope="col">nama</th>
+            <th scope="col">jumlah</th>
+            <th scope="col">harga</th>
         </tr>
     </thead>
     <tbody>
@@ -44,36 +44,30 @@
             <td>{{$trbuy['user']}}</td>
             @php
                 $decode = json_decode($trbuy['materials']);
-                // $mats = str_replace('\\', '', $trbuy['materials']);
-                // // //$yourArray = array_map('intval', $mats); 
-                // // // $indexing = count($mats);
-                // $mats2 = str_replace('"', '', $mats);
-                // //$str = preg_replace('/\\\\\"/',"\"", $trbuy['materials']);
-                // //$mats2 = json_decode($mats);
-                // print_r($decode);
-                foreach ($decode as $key) {
-                    $a = json_decode($key)->name;
-                }
             @endphp
             <td>
                 @foreach($decode as $key1)
-                    {{json_decode($key1)->name }} - {{json_decode($key1)->code_material }} <hr>
+                    {{" - ".json_decode($key1)->name }} {{json_decode($key1)->code_material }} <br>
                 @endforeach
             </td>
             <td>
                 @foreach($decode as $key2)
-                    {{json_decode($key2)->stock }} <hr>
+                    {{json_decode($key2)->stock }} <br>
                 @endforeach
             </td>
             <td>
                 @foreach($decode as $key3)
-                    {{json_decode($key3)->price }} <hr>
+                    {{json_decode($key3)->price }} <br>
                 @endforeach
             </td>
             <td>{{$trbuy['date']}}</td>
             <td>{{$trbuy['price']}}</td>
             <td>
-                tes
+                <form action="#" method="post" onsubmit="return confirm('data akan dihapus!')" class="d-inline">
+                    @csrf
+                    @method('delete')
+                    <button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash"></i></button>
+                </form>
             </td>
         </tr> 
         
@@ -127,7 +121,7 @@
                                     </tr>
                                     <tfoot>
                                         <tr>
-                                            <td colspan='3'><input class="btn btn-primary" type='button' value='Tambah' id='add_row'></td>
+                                            <td colspan='3'><input class="btn btn-primary" type='button' value='Tambah' id='trbuyAdd'></td>
                                         </tr>
                                     </tfoot>
                                 </tbody>
@@ -154,14 +148,25 @@
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $("#add_row").click(function(){
-            var row="<tr> <td><input class='form-control' name='materials_name[]' type='text' required></td> <td><input class='form-control' name='materials_code[]' type='text' required></td> <td><input class='form-control' name='materials_count[]' type='number' required></td> <td><input class='form-control' name='materials_category[]' type='text' required></td> <td><input class='form-control' name='materials_expired[]' type='date' required></td> <td><input class='form-control txtCal' name='materials_price[]' type='number' required></td> <td><input type='button' value='batal' class='btn btn-danger rmv'></td> </tr>";
-            $("#tbl tbody").append(row);
+    $(function() {
+        const $tb = $('#tbl tbody');
+        $(".remove").eq(0).hide()
+        $("#trbuyAdd").on("click", function() {
+            const $row = $tb.find("tr").eq(0).clone();
+            $(".remove", $row).show(); // show the hidden delete on this row
+            $row.find("select").val(""); // reset the select
+            $row.find("[type=number]").val(); // reset the numbers
+            $tb.append($row);
         });
-        
         $("body").on("click",".rmv",function(){
             $(this).closest("tr").remove();
+        });
+    
+        $tb.on('change', '.product-name', function() {
+            const $row = $(this).closest('tr');
+            $(".price", $row).hide();
+            const whichPrice = $(this).val();
+            if (whichPrice != "") $(".price", $row).eq(whichPrice-1).show()
         });
     });
 

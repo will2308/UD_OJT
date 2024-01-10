@@ -21,6 +21,7 @@ class CreateTrProductionsTable extends Migration
             $table->integer('promo')->nullable();
             $table->date('expired');
             $table->integer('stock');
+            $table->integer('price');
             $table->string('picture')->nullable();
             $table->timestamps();
         });

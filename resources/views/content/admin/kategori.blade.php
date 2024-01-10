@@ -81,7 +81,7 @@
                                             <input type="text" class="form-control" name="name" value="{{$kategori['name']}}" readonly>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="desc" class="col-form-label">Deskripso:</label>
+                                            <label for="desc" class="col-form-label">Deskripsi:</label>
                                             <textarea class="form-control" name="desc" readonly>{{$kategori['desc']}}</textarea>
                                         </div>
                                 </div>
