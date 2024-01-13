@@ -45,7 +45,8 @@ class TrSaleController extends Controller
      */
     public function store(Request $req)
     {
-        $customer = 1;
+        $token =  session()->get('login_token');
+        $customer = session()->get('login_data')['id'];
         $admin = 1;
         $promo = "";
         $date = date('Y-m-d H:i:s');
@@ -66,7 +67,9 @@ class TrSaleController extends Controller
 
              // get data bahan 
              $url_get_prd = 'localhost:8000/api/trproduction/'.$product_id[$i];
-             $reponse_get_prd = $trsale->request('get', $url_get_prd);
+             $reponse_get_prd = $trsale->request('get', $url_get_prd, [
+                'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+             ]);
              $dt_prd = json_decode($reponse_get_prd->getBody()->getContents(), true);
              $prd = $dt_prd['data'];
  
@@ -96,7 +99,10 @@ class TrSaleController extends Controller
              // update data product 
             $url_mat = 'localhost:8000/api/trproduction/'.$product_id[$i];
             $trsale->request('put', $url_mat, [
-                'headers'=>['Content-type'=>'aplication/json'],
+                'headers'=>[
+                    'Content-type'=>'aplication/json',
+                    'Authorization' => 'Bearer ' . $token
+                ],
                 'body'=>json_encode($edt_products)
             ]);
         }
@@ -115,7 +121,10 @@ class TrSaleController extends Controller
 
         $url = 'localhost:8000/api/trsale';
         $reponse = $trsale->request('post', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);

@@ -149,25 +149,25 @@
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script>
     $(function() {
-    const $tb = $('#tbl tbody');
-    $(".remove").eq(0).hide()
-    $("#productAdd").on("click", function() {
-        const $row = $tb.find("tr").eq(0).clone();
-        $(".remove", $row).show(); // show the hidden delete on this row
-        $row.find("select").val(""); // reset the select
-        $row.find("[type=number]").val(); // reset the numbers
-        $tb.append($row);
-    });
-    $("body").on("click",".rmv",function(){
-        $(this).closest("tr").remove();
-    });
-   
-    $tb.on('change', '.product-name', function() {
-        const $row = $(this).closest('tr');
-        $(".price", $row).hide();
-        const whichPrice = $(this).val();
-        if (whichPrice != "") $(".price", $row).eq(whichPrice-1).show()
-    });
+        const $tb = $('#tbl tbody');
+        $(".remove").eq(0).hide()
+        $("#productAdd").on("click", function() {
+            const $row = $tb.find("tr").eq(0).clone();
+            $(".remove", $row).show(); // show the hidden delete on this row
+            $row.find("select").val(""); // reset the select
+            $row.find("[type=number]").val(); // reset the numbers
+            $tb.append($row);
+        });
+        $("body").on("click",".rmv",function(){
+            $(this).closest("tr").remove();
+        });
+    
+        $tb.on('change', '.product-name', function() {
+            const $row = $(this).closest('tr');
+            $(".price", $row).hide();
+            const whichPrice = $(this).val();
+            if (whichPrice != "") $(".price", $row).eq(whichPrice-1).show()
+        });
     });
 
     $(function() {

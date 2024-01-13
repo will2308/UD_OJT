@@ -27,7 +27,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'index'])->name('home'); 
 Route::get('/login', [PageController::class, 'login'])->name('login'); 
+Route::post('/register', [PageController::class, 'register'])->name('register'); 
+Route::post('/dologin', [PageController::class, 'dologin'])->name('dologin'); 
 Route::get('/admin', [PageController::class, 'dashboard'])->name('dashboard'); 
+Route::get('/logout', [PageController::class, 'logout'])->name('logout'); 
 
 // kategori bahan 
 Route::get('kategori', [MaterialcategoryController::class, 'index'])->name('kategori'); 

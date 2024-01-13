@@ -15,14 +15,28 @@ class MaterialcategoryController extends Controller
      */
     public function index()
     {
-        $kategori = new Client();
-        $url = 'localhost:8000/api/materialcategory';
-        $reponse = $kategori->request('get', $url);
-        $gt_content = json_decode($reponse->getBody()->getContents(), true);
-        $data = $gt_content['data'];
-        // echo $gt_content;
-        // print_r($data);
-        return view('content.admin.kategori', ['data'=> $data]);
+        $token =  session()->get('login_token');
+        if($token == null){
+            return redirect()->to('login')->with('error', 'anda belum login');
+        }
+        
+        else {
+            if(session()->get('login_data')['role'] == 'customer'){
+                return redirect()->to('')->with('error', 'anda bukan admin');
+            } else {
+        
+                $kategori = new Client();
+                $url = 'localhost:8000/api/materialcategory';
+                $reponse = $kategori->request('get', $url, [
+                    'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+                ]);
+                $gt_content = json_decode($reponse->getBody()->getContents(), true);
+                $data = $gt_content['data'];
+                // echo $gt_content;
+                // print_r($data);
+                return view('content.admin.kategori', ['data'=> $data]);
+            }
+        }
     }
 
     /**
@@ -43,6 +57,7 @@ class MaterialcategoryController extends Controller
      */
     public function store(Request $req)
     {
+        $token =  session()->get('login_token');
         $name = $req->name;
         $desc = $req->desc;
         $parameter = [
@@ -53,7 +68,10 @@ class MaterialcategoryController extends Controller
         $kategori = new Client();
         $url = 'localhost:8000/api/materialcategory';
         $reponse = $kategori->request('post', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
@@ -87,6 +105,7 @@ class MaterialcategoryController extends Controller
      */
     public function edit(Materialcategory $materialcategory, Request $req, $id)
     {
+        $token =  session()->get('login_token');
         $name = $req->name;
         $desc = $req->desc;
         $parameter = [
@@ -97,7 +116,10 @@ class MaterialcategoryController extends Controller
         $kategori = new Client();
         $url = 'localhost:8000/api/materialcategory/'.$id;
         $reponse = $kategori->request('put', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
@@ -132,9 +154,12 @@ class MaterialcategoryController extends Controller
      */
     public function destroy(Materialcategory $materialcategory, $id)
     {
+        $token =  session()->get('login_token');
         $kategori = new Client();
         $url = 'localhost:8000/api/materialcategory/'.$id;
-        $reponse = $kategori->request('delete', $url);
+        $reponse = $kategori->request('delete', $url, [
+            'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+        ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
         if($gt_content['status'] != true){
             $error = $gt_content['data'];

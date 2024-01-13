@@ -15,24 +15,38 @@ class TrProductionController extends Controller
      */
     public function index()
     {
-        $trproduction = new Client();
-        $url = 'localhost:8000/api/trproduction';
-        $reponse = $trproduction->request('get', $url);
-        $gt_content = json_decode($reponse->getBody()->getContents(), true);
-        $data = $gt_content['data'];
+        $token =  session()->get('login_token');
+        if($token == null){
+            return redirect()->to('login')->with('error', 'anda belum login');
+        }
+        
+        else {
+            if(session()->get('login_data')['role'] == 'customer'){
+                return redirect()->to('')->with('error', 'anda bukan admin');
+            } else {
+        
+                $trproduction = new Client();
+                $url = 'localhost:8000/api/trproduction';
+                $reponse = $trproduction->request('get', $url);
+                $gt_content = json_decode($reponse->getBody()->getContents(), true);
+                $data = $gt_content['data'];
 
-        $urlmat = 'localhost:8000/api/material';
-        $reponsecat = $trproduction->request('get', $urlmat);
-        $gt_mat = json_decode($reponsecat->getBody()->getContents(), true);
-        $materials = $gt_mat['data'];
+                $urlmat = 'localhost:8000/api/material';
+                $reponsecat = $trproduction->request('get', $urlmat, [
+                    'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+                ]);
+                $gt_mat = json_decode($reponsecat->getBody()->getContents(), true);
+                $materials = $gt_mat['data'];
 
-        $urlpromo = 'localhost:8000/api/promo';
-        $reponsepromo = $trproduction->request('get', $urlpromo);
-        $gt_promo = json_decode($reponsepromo->getBody()->getContents(), true);
-        $promo = $gt_promo['data'];
-        // echo $gt_content;
-        // print_r($data);
-        return view('content.admin.trproduction', ['data'=> $data, 'materials'=> $materials,'promo' => $promo]);
+                $urlpromo = 'localhost:8000/api/promo';
+                $reponsepromo = $trproduction->request('get', $urlpromo);
+                $gt_promo = json_decode($reponsepromo->getBody()->getContents(), true);
+                $promo = $gt_promo['data'];
+                // echo $gt_content;
+                // print_r($data);
+                return view('content.admin.trproduction', ['data'=> $data, 'materials'=> $materials,'promo' => $promo]);
+            }
+        }
     }
 
     /**
@@ -53,6 +67,7 @@ class TrProductionController extends Controller
      */
     public function store(Request $req)
     {
+        $token =  session()->get('login_token');
         $mat_id = $req->materials;
         $mat_count = $req->materials_count;
         $name = $req->name;
@@ -76,7 +91,9 @@ class TrProductionController extends Controller
             $trproduction = new Client();
             // get data bahan 
             $url_get_mat = 'localhost:8000/api/material/'.$mat_id[$i];
-            $reponse_get_mat = $trproduction->request('get', $url_get_mat);
+            $reponse_get_mat = $trproduction->request('get', $url_get_mat, [
+                'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+            ]);
             $dt_mat = json_decode($reponse_get_mat->getBody()->getContents(), true);
             $mats = $dt_mat['data'];
 
@@ -102,7 +119,10 @@ class TrProductionController extends Controller
             // update data bahan 
             $url_mat = 'localhost:8000/api/material/'.$mat_id[$i];
             $trproduction->request('put', $url_mat, [
-                'headers'=>['Content-type'=>'aplication/json'],
+                'headers'=>[
+                    'Content-type'=>'aplication/json',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
                 'body'=>json_encode($edt_materials)
             ]);
         }
@@ -122,7 +142,10 @@ class TrProductionController extends Controller
                 
         $url = 'localhost:8000/api/trproduction';
         $reponse = $trproduction->request('post', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);

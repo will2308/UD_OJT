@@ -15,14 +15,26 @@ class PromoController extends Controller
      */
     public function index()
     {
-        $promo = new Client();
-        $url = 'localhost:8000/api/promo';
-        $reponse = $promo->request('get', $url);
-        $gt_content = json_decode($reponse->getBody()->getContents(), true);
-        $data = $gt_content['data'];
-        // echo $gt_content;
-        // print_r($data);
-        return view('content.admin.promo', ['data'=> $data]);
+        $token =  session()->get('login_token');
+        if($token == null){
+            return redirect()->to('login')->with('error', 'anda belum login');
+        }
+        
+        else {
+            if(session()->get('login_data')['role'] == 'customer'){
+                return redirect()->to('')->with('error', 'anda bukan admin');
+            } else {
+        
+                $promo = new Client();
+                $url = 'localhost:8000/api/promo';
+                $reponse = $promo->request('get', $url);
+                $gt_content = json_decode($reponse->getBody()->getContents(), true);
+                $data = $gt_content['data'];
+                // echo $gt_content;
+                // print_r($data);
+                return view('content.admin.promo', ['data'=> $data]);
+            }
+        }
     }
 
     /**
@@ -43,6 +55,7 @@ class PromoController extends Controller
      */
     public function store(Request $req)
     {
+        $token =  session()->get('login_token');
         $name = $req->name;
         $desc = json_encode(array('desc' => $req->desc, "promo" => $req->promo));
 
@@ -54,7 +67,10 @@ class PromoController extends Controller
         $promo = new Client();
         $url = 'localhost:8000/api/promo';
         $reponse = $promo->request('post', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
@@ -88,6 +104,7 @@ class PromoController extends Controller
      */
     public function edit(Promo $promo, Request $req, $id)
     {
+        $token =  session()->get('login_token');
         $name = $req->name;
         $desc = json_encode(array('desc' => $req->desc, "promo" => $req->promo));
         $parameter = [
@@ -98,7 +115,10 @@ class PromoController extends Controller
         $promo = new Client();
         $url = 'localhost:8000/api/promo/'.$id;
         $reponse = $promo->request('put', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
@@ -130,9 +150,12 @@ class PromoController extends Controller
      */
     public function destroy(Promo $promo, $id)
     {
+        $token =  session()->get('login_token');
         $promo = new Client();
         $url = 'localhost:8000/api/promo/'.$id;
-        $reponse = $promo->request('delete', $url);
+        $reponse = $promo->request('delete', $url, [
+            'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+        ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
         if($gt_content['status'] != true){
             $error = $gt_content['data'];

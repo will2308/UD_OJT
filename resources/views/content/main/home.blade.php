@@ -17,12 +17,18 @@
 </div>
 @endif
 
+@if (session()->has('error'))
+<div class="alert alert-primary">
+    {{ session('error')}}
+</div>
+@endif
+
 <h1 class="text-center text-secondary">Tamu dan penggunjung wajib lapar!!!</h1>
 <div class="row">
     @foreach ($data as $product )
     <div class="col-3">
         <div class="card mb-3">
-            <h3 class="card-header">{{ $product['name'] }}</h3>
+            <h3 class="card-header">{{ $product['name'] }}  <span class="badge bg-secondary rounded-pill">{{ $product['stock'] }}</span></h3>
             <div class="card-body">
                 <h5 class="card-title">{{ $promo[array_search($product['name'], array_column($promo, 'id'))]['name'] }} - {{ json_decode($promo[array_search($product['name'], array_column($promo, 'id'))]['desc'])->promo }}%</h5>
                 <h6 class="card-subtitle text-muted">{{ json_decode($promo[array_search($product['name'], array_column($promo, 'id'))]['desc'])->desc }}</h6>
@@ -37,7 +43,12 @@
             <div class="card-footer text-muted">
                 <p>{{ Carbon\Carbon::parse($product['created_at'])->diffForHumans() }}</p> 
                 <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button"  data-bs-toggle="modal" data-bs-target="#formsale{{$product['id']}}">Beli</button>
+                    @if (session()->get('login_data') == null)
+                        <a class="btn btn-lg btn-success" href="{{ route('login') }}">Beli</a>
+                    @else
+                        <button class="btn btn-lg btn-success" type="button"  data-bs-toggle="modal" data-bs-target="#formsale{{$product['id']}}">Beli</button>
+                    @endif
+                    
                 </div>
             </div>
         </div>
@@ -67,7 +78,7 @@
                                         <tr>
                                             <td>
                                                 <select class="form-control" name="product[]">
-                                                    <option selected>-- pilih bahan --</option>
+                                                    <option selected>-- pilih produk --</option>
                                                     @foreach ($data as $produk)
                                                     <option value="{{ $produk['id'] }}"> {{ $produk['name'] }} </option>
                                                     @endforeach
@@ -101,140 +112,6 @@
 
     @endforeach
    
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <div class="card-body">
-                <h5 class="card-title">Special Diskon 50%</h5>
-                <h6 class="card-subtitle text-muted">Promo awal tahun</h6>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <div class="card-body">
-                <h5 class="card-title">Special Diskon 70%</h5>
-                <h6 class="card-subtitle text-muted">Banting Harga</h6>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card mb-3">
-            <h3 class="card-header">Produk</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                <rect width="100%" height="100%" fill="#868e96"></rect>
-                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-            </svg>
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer text-muted">
-                <p>2 days ago</p> 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-lg btn-success" type="button">Beli</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>

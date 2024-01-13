@@ -17,19 +17,35 @@ class TrBuyController extends Controller
      */
     public function index()
     {
-        $trbuy = new Client();
-        $url = 'localhost:8000/api/trbuy';
-        $reponse = $trbuy->request('get', $url);
-        $gt_content = json_decode($reponse->getBody()->getContents(), true);
-        $data = $gt_content['data'];
+        $token =  session()->get('login_token');
+        if($token == null){
+            return redirect()->to('login')->with('error', 'anda belum login');
+        }
+        
+        else {
+            if(session()->get('login_data')['role'] == 'customer'){
+                return redirect()->to('')->with('error', 'anda bukan admin');
+            } else {
+        
+                $trbuy = new Client();
+                $url = 'localhost:8000/api/trbuy';
+                $reponse = $trbuy->request('get', $url, [
+                    'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+                ]);
+                $gt_content = json_decode($reponse->getBody()->getContents(), true);
+                $data = $gt_content['data'];
 
-        $urlcat = 'localhost:8000/api/materialcategory';
-        $reponsecat = $trbuy->request('get', $urlcat);
-        $gt_category = json_decode($reponsecat->getBody()->getContents(), true);
-        $category = $gt_category['data'];
-        // echo $gt_content;
-        // print_r($data);
-        return view('content.admin.trbuy', ['data'=> $data, 'category'=> $category]);
+                $urlcat = 'localhost:8000/api/materialcategory';
+                $reponsecat = $trbuy->request('get', $urlcat, [
+                    'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+                ]);
+                $gt_category = json_decode($reponsecat->getBody()->getContents(), true);
+                $category = $gt_category['data'];
+                // echo $gt_content;
+                // print_r($data);
+                return view('content.admin.trbuy', ['data'=> $data, 'category'=> $category]);
+            }
+        }
     }
 
     /**
@@ -50,6 +66,7 @@ class TrBuyController extends Controller
      */
     public function store(Request $req)
     {
+        $token =  session()->get('login_token');
         $mat_name = $req->materials_name;
         $mat_code = $req->materials_code;
         $mat_count = $req->materials_count;
@@ -72,7 +89,10 @@ class TrBuyController extends Controller
             $trbuy = new Client();
             $url_mat = 'localhost:8000/api/material';
             $trbuy->request('post', $url_mat, [
-                'headers'=>['Content-type'=>'aplication/json'],
+                'headers'=>[
+                    'Content-type'=>'aplication/json',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
                 'body'=>json_encode($data_materials)
             ]);
         }
@@ -100,7 +120,10 @@ class TrBuyController extends Controller
         // // add pembelian
         $url = 'localhost:8000/api/trbuy';
         $reponse = $trbuy->request('post', $url, [
-            'headers'=>['Content-type'=>'aplication/json'],
+            'headers'=>[
+                'Content-type'=>'aplication/json',
+                'Authorization' => 'Bearer ' . $token,
+            ],
             'body'=>json_encode($parameter)
         ]);
         $gt_content = json_decode($reponse->getBody()->getContents(), true);
