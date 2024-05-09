@@ -106,10 +106,10 @@
                 </div> 
             </div>         
         </div>
-        <ul>
+        {{-- <ul>
             <li>PHP: {{ phpversion() }}</li>
             <li>Laravel: {{ app()->version() }}</li>
-        </ul>
+        </ul> --}}
         <script src="https://bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

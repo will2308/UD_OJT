@@ -18,9 +18,7 @@ class MaterialController extends Controller
         $token =  session()->get('login_token');
         if($token == null){
             return redirect()->to('login')->with('error', 'anda belum login');
-        }
-        
-        else {
+        } else {
             if(session()->get('login_data')['role'] == 'customer'){
                 return redirect()->to('')->with('error', 'anda bukan admin');
             } else {
